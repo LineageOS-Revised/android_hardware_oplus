@@ -1,0 +1,5 @@
+service vendor.lineage.thermal-service /vendor/bin/hw/vendor.lineage.thermal-service.default
+    class hal
+    user root
+    group root system
+    interface aidl vendor.lineage.thermal.IThermalControl/default
