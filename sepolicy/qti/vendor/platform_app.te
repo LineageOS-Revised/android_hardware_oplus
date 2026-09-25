@@ -6,3 +6,5 @@
 # Allow SystemUI to read the display's measured fps node
 allow platform_app_all vendor_sysfs_graphics:file r_file_perms;
 
+# Allow SystemUI to read the CPU statistics
+allow platform_app_all proc_stat:file r_file_perms;
