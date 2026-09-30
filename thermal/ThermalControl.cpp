@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
+#define LOG_TAG "vendor.lineage.thermal-service.default"
+
 #include "ThermalControl.h"
 
+#include <android-base/logging.h>
 #include <android/binder_status.h>
 
 #include <unistd.h>
@@ -53,63 +56,84 @@ ndk::ScopedAStatus ThermalControl::clearCpuLimit() {
 void ThermalControl::monitor() {
     while (true) {
         int32_t limit = mLimit.load();
-        if (limit > 0) {
-            if (readTemperature() >= limit) {
-                apply();
-            } else {
+        if (limit <= 0) {
+            if (mStage > 0) {
                 restore();
+                mStage = 0;
             }
-        } else if (mApplied) {
-            restore();
+            mBelowSeconds = 0;
+        } else {
+            int32_t temperature = readTemperature();
+            if (temperature >= limit) {
+                int32_t stage = temperature >= limit + 6000 ? 3 :
+                        temperature >= limit + 3000 ? 2 : 1;
+                if (stage > mStage) {
+                    LOG(INFO) << "Limit " << limit / 1000 << "C temperature "
+                              << temperature / 1000 << "C stage " << stage;
+                }
+                apply(stage == 1 ? 50 : stage == 2 ? 30 : 0);
+                mStage = stage;
+                mBelowSeconds = 0;
+            } else if (mStage > 0 && temperature <= limit - 3000) {
+                if (++mBelowSeconds >= 10) {
+                    restore();
+                    LOG(INFO) << "Limit released";
+                    mStage = 0;
+                    mBelowSeconds = 0;
+                }
+            } else {
+                mBelowSeconds = 0;
+            }
         }
         std::this_thread::sleep_for(1s);
     }
 }
 
-void ThermalControl::apply() {
+void ThermalControl::apply(int32_t percent) {
     std::lock_guard<std::mutex> lock(mLock);
     for (auto& policy : mPolicies) {
         int32_t current = readInt(policy.maxPath);
         if (current <= 0) {
             continue;
         }
-        if (policy.ourMax == 0) {
+        if (policy.vendorMax == 0) {
             policy.vendorMax = current;
         }
-        int32_t chosen = pick(policy);
-        if (chosen <= 0 || chosen >= current) {
+        int32_t chosen = policy.freqs.back();
+        if (percent > 0) {
+            int32_t target = policy.freqs.front() * percent / 100;
+            for (int32_t freq : policy.freqs) {
+                if (freq <= target) {
+                    chosen = freq;
+                    break;
+                }
+            }
+        }
+        if (chosen >= current) {
             continue;
         }
-        if (writeInt(policy.maxPath, chosen)) {
-            policy.ourMax = chosen;
+        if (!writeInt(policy.maxPath, chosen)) {
+            LOG(WARNING) << "Failed to write " << policy.maxPath;
+            continue;
         }
+        if (policy.ourMax != chosen) {
+            LOG(INFO) << "Capped " << policy.maxPath << " to " << chosen;
+        }
+        policy.ourMax = chosen;
     }
-    mApplied = true;
 }
 
 void ThermalControl::restore() {
     std::lock_guard<std::mutex> lock(mLock);
     for (auto& policy : mPolicies) {
         if (policy.ourMax > 0 && readInt(policy.maxPath) == policy.ourMax) {
-            writeInt(policy.maxPath, policy.vendorMax);
+            if (writeInt(policy.maxPath, policy.vendorMax)) {
+                LOG(INFO) << "Restored " << policy.maxPath << " to " << policy.vendorMax;
+            }
         }
         policy.ourMax = 0;
         policy.vendorMax = 0;
     }
-    mApplied = false;
-}
-
-int32_t ThermalControl::pick(const Policy& policy) {
-    if (policy.freqs.empty()) {
-        return 0;
-    }
-    int32_t target = policy.freqs.front() * 60 / 100;
-    for (int32_t freq : policy.freqs) {
-        if (freq <= target) {
-            return freq;
-        }
-    }
-    return 0;
 }
 
 int32_t ThermalControl::readTemperature() {

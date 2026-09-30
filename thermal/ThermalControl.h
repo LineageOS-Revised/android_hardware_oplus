@@ -32,9 +32,8 @@ class ThermalControl : public BnThermalControl {
 
     void discover();
     void monitor();
-    void apply();
+    void apply(int32_t percent);
     void restore();
-    int32_t pick(const Policy& policy);
     int32_t readTemperature();
     int32_t readInt(const std::string& path);
     std::string readString(const std::string& path);
@@ -44,7 +43,8 @@ class ThermalControl : public BnThermalControl {
     std::vector<Policy> mPolicies;
     std::mutex mLock;
     std::atomic<int32_t> mLimit{0};
-    std::atomic<bool> mApplied{false};
+    int32_t mStage{0};
+    int32_t mBelowSeconds{0};
     std::thread mThread;
 };
 
