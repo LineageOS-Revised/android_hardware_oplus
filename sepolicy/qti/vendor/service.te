@@ -15,11 +15,15 @@ type hal_oplus_commondcs_aidl_service, hal_service_type, service_manager_type;
 type hal_oplus_cwb_aidl_service, hal_service_type, service_manager_type;
 
 # Display
+type hal_oplus_display_mixlut3d_service, hal_service_type, service_manager_type;
 type hal_oplus_displaycolor_aidl_service, hal_service_type, service_manager_type;
 type hal_oplus_displaypanel_aidl_service, hal_service_type, service_manager_type;
 
 # Display (Pixelworks)
 type hal_display_iris_aidl_service, hal_service_type, service_manager_type;
+
+# EID
+type hal_oplus_eid_service, hal_service_type, service_manager_type;
 
 # eSIM
 type hal_oplus_esim_aidl_service, hal_service_type, service_manager_type;
@@ -29,6 +33,9 @@ type hal_fingerprintpay_service, hal_service_type, service_manager_type;
 
 # ImsRtp
 type hal_imsrtp_service, hal_service_type, service_manager_type;
+
+# NFC (TMS)
+type hal_oplus_nfc_tms_service, hal_service_type, service_manager_type;
 
 # OLC
 type hal_oplus_olc_aidl_service, hal_service_type, service_manager_type;

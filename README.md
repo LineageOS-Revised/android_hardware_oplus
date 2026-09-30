@@ -19,3 +19,4 @@
 | OPLUS_LINEAGE_VIBRATOR_HAL | INCLUDE_DIR | Device specific include dir path | |
 | OPLUS_LINEAGE_VIBRATOR_HAL | LIVETAP_F0_CFLAG | LiveTap default f0 compiler flag | -DLIVETAP_DEFAULT_F0=170 |
 | OPLUS_LINEAGE_VIBRATOR_HAL | USE_EFFECT_STREAM | Enable effect stream feature | false |
+| OPLUS_SENSORS_FUSIONLIGHT | BACKEND_SUBHAL_LIB_NAME | FusionLight Sensors SubHAL backend library name | |

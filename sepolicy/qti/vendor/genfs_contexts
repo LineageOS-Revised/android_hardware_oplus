@@ -53,6 +53,10 @@ genfscon proc /shell-temp    u:object_r:proc_horae:s0
 # Multimedia feedback
 genfscon proc /mm_fb    u:object_r:vendor_proc_mm_fb:s0
 
+# NFC
+genfscon proc /oplus_nfc/chipset    u:object_r:hal_tms_nfc_chip_name:s0
+genfscon proc /tmsdev/logger        u:object_r:proc_tms_logger:s0
+
 # Performance
 genfscon proc /oplus_scheduler                                     u:object_r:vendor_proc_oplus_scheduler:s0
 genfscon proc /task_info/task_sched_info/d_backtrace               u:object_r:vendor_proc_oplus_ctp:s0
@@ -127,6 +131,7 @@ genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_0_geni_se/880000.spi/spi_
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_1_geni_se/884000.i2c/i2c-8/8-0028/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_1_geni_se/884000.i2c/i2c-9/9-0028/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/880000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/88c000.qcom,qup_uart/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/884000.i2c/i2c-7/7-0010/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/884000.i2c/i2c-8/8-0010/wakeup u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/8c0000.qcom,qupv3_2_geni_se/884000.i2c/i2c-9/9-0010/wakeup u:object_r:sysfs_wakeup:s0
