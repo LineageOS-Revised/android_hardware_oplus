@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+
+# Bypass charging (PLC) control from Settings.
+#
+# The Settings app needs to resolve /sys/class/oplus_chg/common/plc, which is a
+# symlink chain into /sys/devices/virtual/oplus_chg. Only traversal of the plain
+# sysfs directories is granted here; the charger node itself lives in the vendor
+# policy bucket (see ../vendor/system_app.te).
+
+allow system_app sysfs:dir search;
+allow system_app sysfs:lnk_file read;

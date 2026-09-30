@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+
+# Bypass charging (PLC) control from Settings.
+#
+# /sys/class/oplus_chg/common/plc is exposed by the OPlus charger driver and is
+# chowned to system:system by the vendor init scripts, so the Settings app
+# (system_app, uid 1000) can write it directly without an additional helper.
+# The node inherits the vendor_sysfs_usb_supply genfs label.
+#
+# Only the "switch" parameter of the PLC interface is used by Settings:
+#   switch=1|callname=0  enable bypass charging
+#   switch=0|callname=0  resume normal charging
+
+allow system_app vendor_sysfs_usb_supply:dir search;
+allow system_app vendor_sysfs_usb_supply:file { open read write getattr };
